@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <Header/>
+    <!-- when we listen to the occurence of the custom event of add-todo, we invoke addTodo -->
     <AddTodo v-on:add-todo="addTodo"/>
     <Todos v-bind:todos="todos" v-on:del-todo="deleteTodo"/>
   </div>
@@ -10,11 +11,11 @@
 import Todos from "./components/Todos"
 import Header from './components/layouts/Header'
 import AddTodo from './components/AddTodo'
+import axios from 'axios'
 
 export default {
   name: "App", // name of the component
-  components: {
-    // child components that this parent component has
+  components: {// child components that this parent component has
     Todos, 
     Header, 
     AddTodo
@@ -22,32 +23,34 @@ export default {
   data() {
     // data that this component has
     return {
-      todos: [
-        {
-          id: 1,
-          name: "todo one",
-          completed: false
-        },
-        {
-          id: 2,
-          name: "todo two",
-          completed: true
-        },
-        {
-          id: 3,
-          name: "todo three",
-          completed: false
-        }
-      ]
+      todos: []
     };
   }, 
   methods:{
     deleteTodo(id){
-      this.todos = this.todos.filter( todo => todo.id !== id)
+      axios
+      .delete(`https://jsonplaceholder.typicode.com/todos/${id}`)
+      .then( res => {
+        console.log(res)
+        this.todos = this.todos.filter(todo=> todo.id !== id)
+      })
+      .catch(err => console.log(err))
     }, 
     addTodo(newTodo){
-      this.todos = [...this.todos, newTodo]
+      const {title, completed} = newTodo
+      axios
+        .post("https://jsonplaceholder.typicode.com/todos", {
+        title, 
+        completed
+      }).then(res => this.todos = [...this.todos, res.data])
+        .catch(error => console.log(error))
     }
+  }, 
+  created(){//similar to react/componentDidMount
+    axios
+    .get("https://jsonplaceholder.typicode.com/todos?_limit=5")
+    .then(res => this.todos = res.data)
+    .catch(error => console.log(error))
   }
 };
 </script>

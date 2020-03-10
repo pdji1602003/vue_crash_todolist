@@ -2,7 +2,7 @@
   <div>
     <form @submit="addTodo">
 			<input
-				v-model="name" 
+				v-model="title" 
 				type="text" 
 				name="title" 
 				placeholder="Add Todo..."
@@ -13,26 +13,25 @@
 </template>
 
 <script>
-import { v4 as uuidv4 } from 'uuid'
+// import { v4 as uuidv4 } from 'uuid'
 
 export default {
 	name:'AddTodo', 
 	data(){
 		return {
-			name:''
+			title:''
 		}
 	}, 
 	methods:{
 		addTodo(e){
 			e.preventDefault()
 			const newTodo = {
-				id: uuidv4(), 
-				name:this.name, 
+				title:this.title, 
 				completed:false
 			}
 
 			this.$emit('add-todo', newTodo)
-			this.name = ''
+			this.title = ''
 		}
 	}
 }
